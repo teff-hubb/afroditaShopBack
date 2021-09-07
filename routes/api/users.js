@@ -4,7 +4,7 @@ const { body, validationResult } = require('express-validator');
 const { createToken } = require('../../helpers');
 
 const { create, getByEmail } = require('../../models/user.model');
-
+const { checkToken } = require('../middlewares');
 router.post('/register',
     body('username', 'Debes incluir el campo username, con una longitud mayor de 3 caracteres').exists().isLength({ min: 3 }),
     body('password', 'Debes incluir un password mayor de 3 caracteres y menor de 10').exists().isLength({ min: 4, max: 10 }).custom(value => {
@@ -47,5 +47,9 @@ router.post('/login', async (req, res) => {
         res.json({ error: 'Error en usuario y/o contraseña 2' });
     }
 });
+router.get('/', checkToken, async (req, res) => {
+    delete req.user.password;
+    res.json({user: 'hola'})
+})
 
 module.exports = router;
